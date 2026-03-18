@@ -1,23 +1,29 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
-const mongoose = require("mongoose");
-const app = express();
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log(err));
+const applicationRoutes = require("./routes/applicationRoutes");
+
+const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+app.use("/api/applications", applicationRoutes); // “Any request that starts with /api/applications should use the routes in applicationRoutes.”
+
 app.get("/", (req, res) => {
-  res.send("api is running");
+  res.send("API running");
 });
 
-const PORT = process.env.PORT || 5000;
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB connected");
 
-app.listen(PORT, () => {
-  console.log(`server is running on port ${PORT}`);
-});
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => console.log(err));
