@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { protect } = require("../middleware/authMiddleware");
 
 const {
   getAllApplications,
@@ -8,6 +9,8 @@ const {
   updateApplication,
   deleteApplication,
 } = require("../controllers/applicationController");
+
+router.use(protect); // all application routes require auth
 
 router.get("/", getAllApplications);
 router.get("/:id", getApplicationById);

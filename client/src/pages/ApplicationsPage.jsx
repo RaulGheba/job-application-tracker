@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import ApplicationForm from "../components/ApplicationForm";
 import ApplicationList from "../components/ApplicationList";
+import { useAuth } from "../context/AuthContext";
 import {
   getApplications,
   createApplication,
@@ -9,6 +10,7 @@ import {
 } from "../services/applicationService";
 
 function ApplicationsPage() {
+  const { user } = useAuth();
   const [applications, setApplications] = useState([]);
   const [filterStatus, setFilterStatus] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
@@ -87,6 +89,13 @@ function ApplicationsPage() {
   return (
     <main className="min-h-screen px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
+
+        {/* Unverified banner */}
+        {user && !user.isVerified && (
+          <div className="mb-6 rounded-xl border border-yellow-500/20 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-300">
+            📬 Please verify your email to confirm your account. Check your inbox for the link.
+          </div>
+        )}
 
         {/* Header */}
         <section className="mb-8">

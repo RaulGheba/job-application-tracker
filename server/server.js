@@ -4,15 +4,17 @@ const cors = require("cors");
 require("dotenv").config();
 
 const applicationRoutes = require("./routes/applicationRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/applications", applicationRoutes); // “Any request that starts with /api/applications should use the routes in applicationRoutes.”
+app.use("/api/auth", authRoutes);
+app.use("/api/applications", applicationRoutes);
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.send("API running");
 });
 

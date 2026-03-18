@@ -1,6 +1,20 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
+  const navLink = ({ isActive }) =>
+    `rounded-lg px-4 py-2 text-sm font-medium transition cursor-pointer ${
+      isActive ? "bg-white/10 text-white" : "text-slate-400 hover:bg-white/5 hover:text-white"
+    }`;
+
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-900/70 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
@@ -12,43 +26,25 @@ function Navbar() {
         </NavLink>
 
         <nav className="flex items-center gap-1">
-          <NavLink
-            to="/"
-            end
-            className={({ isActive }) =>
-              `rounded-lg px-4 py-2 text-sm font-medium transition ${
-                isActive
-                  ? "bg-white/10 text-white"
-                  : "text-slate-400 hover:bg-white/5 hover:text-white"
-              }`
-            }
-          >
-            Home
-          </NavLink>
-          <NavLink
-            to="/applications"
-            className={({ isActive }) =>
-              `rounded-lg px-4 py-2 text-sm font-medium transition ${
-                isActive
-                  ? "bg-white/10 text-white"
-                  : "text-slate-400 hover:bg-white/5 hover:text-white"
-              }`
-            }
-          >
-            Applications
-          </NavLink>
-          <NavLink
-            to="/about"
-            className={({ isActive }) =>
-              `rounded-lg px-4 py-2 text-sm font-medium transition ${
-                isActive
-                  ? "bg-white/10 text-white"
-                  : "text-slate-400 hover:bg-white/5 hover:text-white"
-              }`
-            }
-          >
-            About
-          </NavLink>
+          <NavLink to="/" end className={navLink}>Home</NavLink>
+          <NavLink to="/applications" className={navLink}>Applications</NavLink>
+          <NavLink to="/about" className={navLink}>About</NavLink>
+
+          {user ? (
+            <button
+              onClick={handleLogout}
+              className="ml-2 cursor-pointer rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white"
+            >
+              Log out
+            </button>
+          ) : (
+            <NavLink
+              to="/login"
+              className="ml-2 cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+            >
+              Sign in
+            </NavLink>
+          )}
         </nav>
       </div>
     </header>
