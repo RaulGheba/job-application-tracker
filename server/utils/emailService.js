@@ -1,16 +1,12 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "smtp-relay.brevo.com",
   port: 587,
   secure: false,
-  family: 4,
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: process.env.BREVO_USER,
+    pass: process.env.BREVO_PASS,
   },
 });
 
@@ -18,7 +14,7 @@ const sendVerificationEmail = async (toEmail, token) => {
   const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
 
   await transporter.sendMail({
-    from: `"Job Tracker" <${process.env.EMAIL_USER}>`,
+    from: `"Job Tracker" <${process.env.BREVO_USER}>`,
     to: toEmail,
     subject: "Verify your Job Tracker account",
     html: `
