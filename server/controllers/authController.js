@@ -18,7 +18,9 @@ const register = async (req, res) => {
     const verificationToken = crypto.randomBytes(32).toString("hex");
     const user = await User.create({ email, password, verificationToken });
 
-    await sendVerificationEmail(email, verificationToken);
+    sendVerificationEmail(email, verificationToken).catch((err) =>
+      console.error("Email send failed:", err.message)
+    );
 
     res.status(201).json({ message: "Account created — check your email to verify." });
   } catch (error) {
