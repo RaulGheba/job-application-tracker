@@ -14,6 +14,7 @@ function ApplicationsPage() {
   const [applications, setApplications] = useState([]);
   const [filterStatus, setFilterStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [showApplications, setShowApplications] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const PAGE_SIZE = 5;
@@ -167,6 +168,18 @@ function ApplicationsPage() {
 
         {/* Application list */}
         <section className="rounded-3xl border border-white/10 bg-white/10 p-6 shadow-2xl shadow-black/20 backdrop-blur-xl">
+          {!showApplications ? (
+            <div className="flex flex-col items-center gap-4 py-8 text-center">
+              <p className="text-slate-400">Ready to review your progress?</p>
+              <button
+                onClick={() => setShowApplications(true)}
+                className="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/30 transition hover:bg-blue-500 active:scale-[0.98] cursor-pointer"
+              >
+                Show my applications →
+              </button>
+            </div>
+          ) : (
+          <>
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="text-2xl font-semibold text-white">Your applications</h2>
@@ -232,6 +245,8 @@ function ApplicationsPage() {
                 </div>
               )}
             </>
+          )}
+          </>
           )}
         </section>
       </div>
