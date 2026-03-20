@@ -13,8 +13,10 @@ function ApplicationsPage() {
   const { user } = useAuth();
   const [applications, setApplications] = useState([]);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const PAGE_SIZE = 5;
 
   useEffect(() => {
     const fetchApplications = async () => {
@@ -65,10 +67,20 @@ function ApplicationsPage() {
     }
   };
 
+  const sortedApplications = [...applications].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+
   const filteredApplications =
     filterStatus === "all"
-      ? applications
-      : applications.filter((app) => app.status === filterStatus);
+      ? sortedApplications
+      : sortedApplications.filter((app) => app.status === filterStatus);
+
+  const totalPages = Math.ceil(filteredApplications.length / PAGE_SIZE);
+  const paginatedApplications = filteredApplications.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
 
   const stats = useMemo(() => ({
     total: applications.length,
@@ -169,7 +181,7 @@ function ApplicationsPage() {
               <select
                 id="statusFilter"
                 value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
+                onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}
                 className="cursor-pointer rounded-xl border border-white/10 bg-slate-900/80 px-4 py-2.5 text-sm text-white outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30"
               >
                 <option value="all">All</option>
@@ -186,15 +198,40 @@ function ApplicationsPage() {
               Loading applications...
             </div>
           ) : (
-            <ApplicationList
-              applications={filteredApplications}
-              onDelete={handleDelete}
-              onStatusChange={handleStatusChange}
-              onNotesUpdate={async (id, notes) => {
-                const updated = await updateApplication(id, { notes });
-                setApplications((prev) => prev.map((app) => app._id === id ? updated : app));
-              }}
-            />
+            <>
+              <ApplicationList
+                applications={paginatedApplications}
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+                onNotesUpdate={async (id, notes) => {
+                  const updated = await updateApplication(id, { notes });
+                  setApplications((prev) => prev.map((app) => app._id === id ? updated : app));
+                }}
+              />
+              {totalPages > 1 && (
+                <div className="mt-6 flex items-center justify-between">
+                  <p className="text-sm text-slate-400">
+                    Page {currentPage} of {totalPages}
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-2 text-sm text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-2 text-sm text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </section>
       </div>
