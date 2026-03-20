@@ -1,4 +1,8 @@
-function ApplicationList({ applications, onDelete, onStatusChange }) {
+import { useState } from "react";
+
+function ApplicationList({ applications, onDelete, onStatusChange, onNotesUpdate }) {
+  const [editingId, setEditingId] = useState(null);
+  const [editingNotes, setEditingNotes] = useState("");
   const getStatusClasses = (status) => {
     switch (status) {
       case "applied":
@@ -57,14 +61,45 @@ function ApplicationList({ applications, onDelete, onStatusChange }) {
 
               <div className="mt-4 space-y-3">
                 <div>
-                  <p className="mb-1 text-sm font-medium text-slate-200">
-                    Notes
-                  </p>
-                  <p className="rounded-xl bg-white/5 px-4 py-3 text-sm text-slate-300">
-                    {application.notes?.trim()
-                      ? application.notes
-                      : "No notes added yet."}
-                  </p>
+                  <div className="mb-1 flex items-center justify-between">
+                    <p className="text-sm font-medium text-slate-200">Notes</p>
+                    {editingId !== application._id && (
+                      <button
+                        onClick={() => { setEditingId(application._id); setEditingNotes(application.notes || ""); }}
+                        className="text-xs text-blue-400 hover:text-blue-300 transition cursor-pointer"
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </div>
+                  {editingId === application._id ? (
+                    <div className="space-y-2">
+                      <textarea
+                        value={editingNotes}
+                        onChange={(e) => setEditingNotes(e.target.value)}
+                        rows={3}
+                        className="w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-sm text-white outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30 resize-none"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => { onNotesUpdate(application._id, editingNotes); setEditingId(null); }}
+                          className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-500 transition cursor-pointer"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingId(null)}
+                          className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white transition cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="rounded-xl bg-white/5 px-4 py-3 text-sm text-slate-300">
+                      {application.notes?.trim() ? application.notes : "No notes added yet."}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -73,7 +108,7 @@ function ApplicationList({ applications, onDelete, onStatusChange }) {
                   </p>
                   {application.link?.trim() ? (
                     <a
-                      href={application.link}
+                      href={application.link.startsWith("http") ? application.link : `https://${application.link}`}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex break-all text-sm font-medium text-blue-300 transition hover:text-blue-200 hover:underline"

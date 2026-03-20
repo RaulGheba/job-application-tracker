@@ -190,6 +190,10 @@ function ApplicationsPage() {
               applications={filteredApplications}
               onDelete={handleDelete}
               onStatusChange={handleStatusChange}
+              onNotesUpdate={async (id, notes) => {
+                const updated = await updateApplication(id, { notes });
+                setApplications((prev) => prev.map((app) => app._id === id ? updated : app));
+              }}
             />
           )}
         </section>
