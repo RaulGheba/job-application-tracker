@@ -4,7 +4,7 @@ const sendVerificationEmail = async (toEmail, token) => {
   const response = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: {
-      "api-key": process.env.BREVO_API_KEY,
+      "api-key": process.env.BREVO_PASS,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
