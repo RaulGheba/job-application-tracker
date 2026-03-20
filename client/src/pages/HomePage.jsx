@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const features = [
@@ -22,9 +23,22 @@ const features = [
 ];
 
 function HomePage() {
+  const [showBanner, setShowBanner] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowBanner(false), 6000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <main className="min-h-screen px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
+        {showBanner && (
+          <div className="mb-8 flex items-center justify-between rounded-xl border border-yellow-500/20 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-300 transition-opacity">
+            <span>⏱ First load may take ~30s while the server wakes up — free hosting hibernates when idle.</span>
+            <button onClick={() => setShowBanner(false)} className="ml-4 cursor-pointer text-yellow-400 hover:text-yellow-200">✕</button>
+          </div>
+        )}
         {/* Hero */}
         <section className="mb-24 text-center">
           <h1 className="mx-auto mb-4 max-w-3xl text-5xl font-bold leading-tight tracking-tight text-white sm:text-6xl lg:text-7xl">
